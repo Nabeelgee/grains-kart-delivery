@@ -23,6 +23,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 type PaymentMethod = "cod" | "upi" | "card";
@@ -32,6 +33,7 @@ export default function CartPage() {
   const { user } = useAuth();
   const {
     items,
+    restaurantId,
     restaurantName,
     updateQuantity,
     removeItem,
@@ -46,24 +48,51 @@ export default function CartPage() {
   const [discount, setDiscount] = useState(0);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cod");
   const [deliveryAddress, setDeliveryAddress] = useState("");
+  const [deliveryCity, setDeliveryCity] = useState("");
   const [deliveryPhone, setDeliveryPhone] = useState("");
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleApplyPromo = () => {
-    if (promoCode.toUpperCase() === "FIRST50") {
-      const discountAmount = Math.min(subtotal * 0.5, 100);
-      setDiscount(discountAmount);
-      setPromoApplied(true);
-      toast.success("Promo code applied! 50% off (max ₹100)");
-    } else if (promoCode.toUpperCase() === "GRAINS20") {
-      const discountAmount = subtotal * 0.2;
-      setDiscount(discountAmount);
-      setPromoApplied(true);
-      toast.success("Promo code applied! 20% off");
-    } else {
+  const handleApplyPromo = async () => {
+    // Check promo code in database
+    const { data: promo, error } = await supabase
+      .from("promo_codes")
+      .select("*")
+      .eq("code", promoCode.toUpperCase())
+      .eq("is_active", true)
+      .maybeSingle();
+
+    if (error || !promo) {
       toast.error("Invalid promo code");
+      return;
     }
+
+    // Check minimum order amount
+    if (promo.min_order_amount && subtotal < promo.min_order_amount) {
+      toast.error(`Minimum order amount is ₹${promo.min_order_amount}`);
+      return;
+    }
+
+    // Check usage limit
+    if (promo.usage_limit && promo.used_count && promo.used_count >= promo.usage_limit) {
+      toast.error("This promo code has expired");
+      return;
+    }
+
+    // Calculate discount
+    let discountAmount = 0;
+    if (promo.discount_type === "percentage") {
+      discountAmount = subtotal * (promo.discount_value / 100);
+      if (promo.max_discount && discountAmount > promo.max_discount) {
+        discountAmount = promo.max_discount;
+      }
+    } else {
+      discountAmount = promo.discount_value;
+    }
+
+    setDiscount(discountAmount);
+    setPromoApplied(true);
+    toast.success(`Promo code applied! You saved ₹${discountAmount.toFixed(0)}`);
   };
 
   const handlePlaceOrder = async () => {
@@ -78,20 +107,84 @@ export default function CartPage() {
       return;
     }
 
+    if (!deliveryCity.trim()) {
+      toast.error("Please enter your city");
+      return;
+    }
+
     if (!deliveryPhone.trim()) {
       toast.error("Please enter a phone number");
       return;
     }
 
+    if (!restaurantId) {
+      toast.error("Restaurant information is missing");
+      return;
+    }
+
     setLoading(true);
 
-    // Simulate order placement
-    setTimeout(() => {
+    try {
+      const finalTotal = total - discount;
+
+      // Generate order number
+      const orderNumber = `GK${new Date().toISOString().slice(0, 10).replace(/-/g, '')}${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`;
+
+      // Create order
+      const { data: order, error: orderError } = await supabase
+        .from("orders")
+        .insert({
+          user_id: user.id,
+          restaurant_id: restaurantId,
+          order_number: orderNumber,
+          status: "pending",
+          payment_method: paymentMethod,
+          subtotal: subtotal,
+          delivery_fee: deliveryFee,
+          discount: discount,
+          total: finalTotal,
+          delivery_address: deliveryAddress,
+          delivery_city: deliveryCity,
+          delivery_phone: deliveryPhone,
+          notes: notes || null,
+          promo_code: promoApplied ? promoCode.toUpperCase() : null,
+        })
+        .select()
+        .single();
+
+      if (orderError) {
+        console.error("Order error:", orderError);
+        throw orderError;
+      }
+
+      // Create order items
+      const orderItems = items.map((item) => ({
+        order_id: order.id,
+        menu_item_id: item.id,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+        total: item.price * item.quantity,
+      }));
+
+      const { error: itemsError } = await supabase
+        .from("order_items")
+        .insert(orderItems);
+
+      if (itemsError) {
+        console.error("Order items error:", itemsError);
+        throw itemsError;
+      }
+
       toast.success("Order placed successfully!");
       clearCart();
       navigate("/orders");
+    } catch (error: any) {
+      console.error("Error placing order:", error);
+      toast.error(error.message || "Failed to place order");
+    } finally {
       setLoading(false);
-    }, 2000);
+    }
   };
 
   const finalTotal = total - discount;
@@ -231,15 +324,26 @@ export default function CartPage() {
                     onChange={(e) => setDeliveryAddress(e.target.value)}
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="phone">Phone Number *</Label>
-                  <Input
-                    id="phone"
-                    type="tel"
-                    placeholder="Enter your phone number"
-                    value={deliveryPhone}
-                    onChange={(e) => setDeliveryPhone(e.target.value)}
-                  />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="city">City *</Label>
+                    <Input
+                      id="city"
+                      placeholder="Enter your city"
+                      value={deliveryCity}
+                      onChange={(e) => setDeliveryCity(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">Phone Number *</Label>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      placeholder="Enter your phone number"
+                      value={deliveryPhone}
+                      onChange={(e) => setDeliveryPhone(e.target.value)}
+                    />
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="notes">Delivery Instructions (Optional)</Label>
@@ -344,9 +448,6 @@ export default function CartPage() {
                       Apply
                     </Button>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-2">
-                    Try: FIRST50 or GRAINS20
-                  </p>
                 </CardContent>
               </Card>
 
