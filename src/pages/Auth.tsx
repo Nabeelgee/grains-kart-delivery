@@ -100,9 +100,9 @@ export default function AuthPage() {
 
     setLoading(true);
     const { error } = await signUp(email, password, fullName, role);
-    setLoading(false);
-
+    
     if (error) {
+      setLoading(false);
       if (error.message.includes("already registered")) {
         toast.error("This email is already registered. Please sign in instead.");
       } else {
@@ -111,7 +111,18 @@ export default function AuthPage() {
       return;
     }
 
-    toast.success("Account created! Please check your email to verify your account.");
+    // Auto-login after signup since email is auto-confirmed
+    const { error: signInError } = await signIn(email, password);
+    setLoading(false);
+    
+    if (signInError) {
+      toast.error("Account created but failed to sign in. Please try signing in manually.");
+      setMode("signin");
+      return;
+    }
+
+    toast.success("Account created successfully! Welcome to GRAINSKART!");
+    navigate("/");
   };
 
   return (
