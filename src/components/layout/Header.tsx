@@ -44,7 +44,7 @@ export function Header() {
           {/* Location & Search - Desktop */}
           <div className="hidden md:flex items-center gap-4 flex-1 max-w-xl mx-8">
             <button className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
-              <MapPin className="w-4 h-4 text-primary" />
+              
               
             </button>
             <div className="relative flex-1">
