@@ -17,7 +17,7 @@ export function CategoriesSection() {
         <div className="flex items-center justify-between mb-8">
           <div>
             
-            <p className="text-muted-foreground mt-1">Browse by category</p>
+            
           </div>
         </div>
 
