@@ -12,7 +12,5 @@ const categoryImages: Record<string, string> = {
   healthy: "🥗"
 };
 export function CategoriesSection() {
-  return <section className="py-12 md:py-16">
-      
-    </section>;
+  return;
 }
