@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { Package, Clock, CheckCircle, XCircle, ChevronRight, Loader2, Truck, ChefHat, ClipboardCheck } from "lucide-react";
+import { Package, Clock, CheckCircle, XCircle, ChevronRight, Loader2, Truck, ClipboardCheck, Box } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -20,26 +20,29 @@ const statusConfig: Record<
   string,
   { label: string; color: string; icon: React.ElementType; step: number }
 > = {
-  pending: { label: "Pending", color: "bg-warning text-warning-foreground", icon: Clock, step: 1 },
+  placed: { label: "Placed", color: "bg-warning text-warning-foreground", icon: Clock, step: 1 },
   confirmed: { label: "Confirmed", color: "bg-primary text-primary-foreground", icon: ClipboardCheck, step: 2 },
-  preparing: { label: "Preparing", color: "bg-primary text-primary-foreground", icon: ChefHat, step: 3 },
-  out_for_delivery: { label: "On the way", color: "bg-success text-success-foreground", icon: Truck, step: 4 },
-  delivered: { label: "Delivered", color: "bg-success text-success-foreground", icon: CheckCircle, step: 5 },
+  dispatched: { label: "Dispatched", color: "bg-primary text-primary-foreground", icon: Box, step: 3 },
+  shipped: { label: "Shipped", color: "bg-primary text-primary-foreground", icon: Package, step: 4 },
+  out_for_delivery: { label: "Out for Delivery", color: "bg-success/80 text-success-foreground", icon: Truck, step: 5 },
+  delivered: { label: "Delivered", color: "bg-success text-success-foreground", icon: CheckCircle, step: 6 },
   cancelled: { label: "Cancelled", color: "bg-destructive text-destructive-foreground", icon: XCircle, step: 0 },
 };
 
 function OrderTracker({ status }: { status: string }) {
-  const currentStep = statusConfig[status]?.step || 0;
+  const currentStep = statusConfig[status]?.step || 1;
   
   if (status === "cancelled" || status === "delivered") {
     return null;
   }
 
   const steps = [
+    { label: "Placed", step: 1 },
     { label: "Confirmed", step: 2 },
-    { label: "Preparing", step: 3 },
-    { label: "On the way", step: 4 },
-    { label: "Delivered", step: 5 },
+    { label: "Dispatched", step: 3 },
+    { label: "Shipped", step: 4 },
+    { label: "Out for Delivery", step: 5 },
+    { label: "Delivered", step: 6 },
   ];
 
   return (

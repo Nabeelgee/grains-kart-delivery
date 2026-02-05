@@ -9,11 +9,13 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Restaurants from "./pages/Restaurants";
 import Restaurant from "./pages/Restaurant";
+import Products from "./pages/Products";
+import ProductDetail from "./pages/ProductDetail";
+import OrderSuccess from "./pages/OrderSuccess";
 import Cart from "./pages/Cart";
 import Orders from "./pages/Orders";
 import Profile from "./pages/Profile";
 import Admin from "./pages/Admin";
-import Vendor from "./pages/Vendor";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,11 +33,13 @@ const App = () => (
               <Route path="/auth" element={<Auth />} />
               <Route path="/restaurants" element={<Restaurants />} />
               <Route path="/restaurant/:slug" element={<Restaurant />} />
+              <Route path="/products" element={<Products />} />
+              <Route path="/product/:id" element={<ProductDetail />} />
+              <Route path="/order-success" element={<OrderSuccess />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/orders" element={<Orders />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/admin" element={<Admin />} />
-              <Route path="/vendor" element={<Vendor />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
