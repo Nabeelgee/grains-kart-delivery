@@ -1,12 +1,47 @@
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { RestaurantCard } from "@/components/restaurant/RestaurantCard";
-import { MOCK_RESTAURANTS } from "@/lib/constants";
+import { ProductCard } from "@/components/product/ProductCard";
+import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
+
+type Product = Database["public"]["Tables"]["menu_items"]["Row"];
 
 export function FeaturedRestaurants() {
-  const featuredRestaurants = MOCK_RESTAURANTS.filter((r) => r.is_featured).slice(0, 4);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchFeaturedProducts();
+  }, []);
+
+  const fetchFeaturedProducts = async () => {
+    const { data } = await supabase
+      .from("menu_items")
+      .select("*")
+      .eq("is_available", true)
+      .eq("is_bestseller", true)
+      .limit(4);
+
+    if (data) setProducts(data);
+    setLoading(false);
+  };
+
+  if (loading) {
+    return (
+      <section className="py-12 md:py-16 bg-secondary/30">
+        <div className="container mx-auto px-4 text-center">
+          <Loader2 className="w-8 h-8 animate-spin mx-auto" />
+        </div>
+      </section>
+    );
+  }
+
+  if (products.length === 0) {
+    return null;
+  }
 
   return (
     <section className="py-12 md:py-16 bg-secondary/30">
@@ -19,12 +54,12 @@ export function FeaturedRestaurants() {
               viewport={{ once: true }}
               className="text-2xl md:text-3xl font-bold"
             >
-              Top Picks For You
+              Bestsellers
             </motion.h2>
-            <p className="text-muted-foreground mt-1">Curated restaurants just for you</p>
+            <p className="text-muted-foreground mt-1">Our most popular products</p>
           </div>
           <Button variant="ghost" asChild className="hidden md:flex">
-            <Link to="/restaurants">
+            <Link to="/products">
               View All
               <ArrowRight className="w-4 h-4 ml-2" />
             </Link>
@@ -32,15 +67,15 @@ export function FeaturedRestaurants() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {featuredRestaurants.map((restaurant, index) => (
-            <RestaurantCard key={restaurant.id} restaurant={restaurant} index={index} />
+          {products.map((product, index) => (
+            <ProductCard key={product.id} product={product} index={index} />
           ))}
         </div>
 
         <div className="mt-8 text-center md:hidden">
           <Button variant="outline" asChild>
-            <Link to="/restaurants">
-              View All Restaurants
+            <Link to="/products">
+              View All Products
               <ArrowRight className="w-4 h-4 ml-2" />
             </Link>
           </Button>

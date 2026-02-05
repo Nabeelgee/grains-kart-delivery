@@ -82,6 +82,7 @@ export type Database = {
       }
       menu_items: {
         Row: {
+          benefits: string[] | null
           category_id: string | null
           created_at: string
           description: string | null
@@ -98,6 +99,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          benefits?: string[] | null
           category_id?: string | null
           created_at?: string
           description?: string | null
@@ -114,6 +116,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          benefits?: string[] | null
           category_id?: string | null
           created_at?: string
           description?: string | null
@@ -505,6 +508,33 @@ export type Database = {
           },
         ]
       }
+      store_settings: {
+        Row: {
+          created_at: string
+          id: string
+          store_description: string | null
+          store_name: string | null
+          updated_at: string
+          upi_number: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          store_description?: string | null
+          store_name?: string | null
+          updated_at?: string
+          upi_number?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          store_description?: string | null
+          store_name?: string | null
+          updated_at?: string
+          upi_number?: string | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
@@ -543,9 +573,10 @@ export type Database = {
     Enums: {
       app_role: "user" | "vendor" | "admin"
       order_status:
-        | "pending"
+        | "placed"
         | "confirmed"
-        | "preparing"
+        | "dispatched"
+        | "shipped"
         | "out_for_delivery"
         | "delivered"
         | "cancelled"
@@ -680,9 +711,10 @@ export const Constants = {
     Enums: {
       app_role: ["user", "vendor", "admin"],
       order_status: [
-        "pending",
+        "placed",
         "confirmed",
-        "preparing",
+        "dispatched",
+        "shipped",
         "out_for_delivery",
         "delivered",
         "cancelled",

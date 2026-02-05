@@ -14,7 +14,7 @@ export function HeroSection() {
             transition={{ duration: 0.6 }}
           >
             <span className="inline-block px-4 py-1.5 bg-primary/10 text-primary rounded-full text-sm font-medium mb-6">
-              🍕 Fresh Flavors, Fast Delivery
+              🌾 Premium Quality Grains
             </span>
           </motion.div>
 
@@ -24,8 +24,8 @@ export function HeroSection() {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="text-4xl md:text-6xl font-extrabold mb-6 leading-tight"
           >
-            Delicious Food{" "}
-            <span className="text-gradient">Delivered</span> to Your Doorstep
+            Premium Grains{" "}
+            <span className="text-gradient">Delivered</span> Fresh to You
           </motion.h1>
 
           <motion.p
@@ -34,25 +34,24 @@ export function HeroSection() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto"
           >
-            Order from your favorite restaurants and grocery stores. Fast delivery, great prices, and amazing food - all in one app.
+            Shop the finest quality rice, wheat, pulses, and more. Farm-fresh grains delivered to your doorstep with guaranteed quality.
           </motion.p>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="flex flex-col sm:flex-row gap-3 max-w-xl mx-auto"
+            className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto"
           >
-            <div className="relative flex-1">
-              <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-primary" />
-              <Input
-                placeholder="Enter your delivery address"
-                className="pl-10 h-12 bg-card border-border shadow-md"
-              />
-            </div>
-            <Button size="lg" className="h-12 px-8 shadow-lg shadow-primary/20">
-              <Search className="w-4 h-4 mr-2" />
-              Find Food
+            <Button asChild size="lg" className="h-12 px-8 shadow-lg shadow-primary/20 flex-1">
+              <a href="/products">
+                Shop Now
+              </a>
+            </Button>
+            <Button asChild variant="outline" size="lg" className="h-12 px-8">
+              <a href="#categories">
+                Browse Categories
+              </a>
             </Button>
           </motion.div>
 
@@ -64,11 +63,11 @@ export function HeroSection() {
           >
             <span className="flex items-center gap-2">
               <span className="w-2 h-2 bg-success rounded-full"></span>
-              500+ Restaurants
+              100% Natural
             </span>
             <span className="flex items-center gap-2">
               <span className="w-2 h-2 bg-primary rounded-full"></span>
-              30 min Delivery
+              Fast Delivery
             </span>
             <span className="flex items-center gap-2">
               <span className="w-2 h-2 bg-warning rounded-full"></span>

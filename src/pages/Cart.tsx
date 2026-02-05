@@ -137,7 +137,7 @@ export default function CartPage() {
           user_id: user.id,
           restaurant_id: restaurantId,
           order_number: orderNumber,
-          status: "pending",
+          status: "placed",
           payment_method: paymentMethod,
           subtotal: subtotal,
           delivery_fee: deliveryFee,
@@ -178,7 +178,7 @@ export default function CartPage() {
 
       toast.success("Order placed successfully!");
       clearCart();
-      navigate("/orders");
+      navigate(`/order-success?order=${orderNumber}`);
     } catch (error: any) {
       console.error("Error placing order:", error);
       toast.error(error.message || "Failed to place order");
@@ -396,7 +396,7 @@ export default function CartPage() {
                       <div>
                         <p className="font-medium">UPI Payment</p>
                         <p className="text-sm text-muted-foreground">
-                          Pay using Google Pay, PhonePe, Paytm
+                          UPI Number: <span className="font-mono font-bold text-primary">6379658082</span>
                         </p>
                       </div>
                     </Label>
