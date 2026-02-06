@@ -1,28 +1,29 @@
- import { motion } from "framer-motion";
- import {
-   LayoutDashboard,
-   Package,
-   ShoppingBag,
-   Tag,
-   Settings,
-   LogOut,
- } from "lucide-react";
- 
- interface AdminSidebarProps {
-   activeTab: string;
-   setActiveTab: (tab: string) => void;
-   onSignOut: () => void;
-   sidebarOpen: boolean;
-   setSidebarOpen: (open: boolean) => void;
- }
- 
- const navItems = [
-   { icon: LayoutDashboard, label: "Dashboard", value: "dashboard" },
-   { icon: Package, label: "Products", value: "products" },
-   { icon: ShoppingBag, label: "Orders", value: "orders" },
-   { icon: Tag, label: "Promo Codes", value: "promos" },
-   { icon: Settings, label: "Settings", value: "settings" },
- ];
+import {
+  LayoutDashboard,
+  Package,
+  ShoppingBag,
+  FileBarChart,
+  Tag,
+  Settings,
+  LogOut,
+} from "lucide-react";
+
+interface AdminSidebarProps {
+  activeTab: string;
+  setActiveTab: (tab: string) => void;
+  onSignOut: () => void;
+  sidebarOpen: boolean;
+  setSidebarOpen: (open: boolean) => void;
+}
+
+const navItems = [
+  { icon: LayoutDashboard, label: "Dashboard", value: "dashboard" },
+  { icon: Package, label: "Products", value: "products" },
+  { icon: ShoppingBag, label: "Orders", value: "orders" },
+  { icon: FileBarChart, label: "Reports", value: "reports" },
+  { icon: Tag, label: "Promo Codes", value: "promos" },
+  { icon: Settings, label: "Settings", value: "settings" },
+];
  
  export function AdminSidebar({
    activeTab,
