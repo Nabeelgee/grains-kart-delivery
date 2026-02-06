@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { ProductsManager } from "@/components/admin/ProductsManager";
 import { OrdersManager } from "@/components/admin/OrdersManager";
+import { ReportsManager } from "@/components/admin/ReportsManager";
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
@@ -67,6 +68,8 @@ export default function AdminDashboard() {
         return <ProductsManager />;
       case "orders":
         return <OrdersManager />;
+      case "reports":
+        return <ReportsManager />;
       case "promos":
         return <PromosContent />;
       case "settings":
