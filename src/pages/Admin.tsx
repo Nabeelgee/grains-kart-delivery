@@ -10,6 +10,8 @@ import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { ProductsManager } from "@/components/admin/ProductsManager";
 import { OrdersManager } from "@/components/admin/OrdersManager";
 import { ReportsManager } from "@/components/admin/ReportsManager";
+import { CategoriesManager } from "@/components/admin/CategoriesManager";
+import { UsersManager } from "@/components/admin/UsersManager";
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
@@ -66,8 +68,12 @@ export default function AdminDashboard() {
         return <DashboardContent stats={stats} />;
       case "products":
         return <ProductsManager />;
+      case "categories":
+        return <CategoriesManager />;
       case "orders":
         return <OrdersManager />;
+      case "users":
+        return <UsersManager />;
       case "reports":
         return <ReportsManager />;
       case "promos":

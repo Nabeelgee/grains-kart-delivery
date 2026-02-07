@@ -6,6 +6,8 @@ import {
   Tag,
   Settings,
   LogOut,
+  FolderOpen,
+  Users,
 } from "lucide-react";
 
 interface AdminSidebarProps {
@@ -19,7 +21,9 @@ interface AdminSidebarProps {
 const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", value: "dashboard" },
   { icon: Package, label: "Products", value: "products" },
+  { icon: FolderOpen, label: "Categories", value: "categories" },
   { icon: ShoppingBag, label: "Orders", value: "orders" },
+  { icon: Users, label: "Users", value: "users" },
   { icon: FileBarChart, label: "Reports", value: "reports" },
   { icon: Tag, label: "Promo Codes", value: "promos" },
   { icon: Settings, label: "Settings", value: "settings" },
