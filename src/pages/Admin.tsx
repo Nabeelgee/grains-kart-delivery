@@ -116,7 +116,7 @@ export default function AdminDashboard() {
           </div>
         </header>
 
-        <div className="p-6">{renderContent()}</div>
+        <div className="p-3 sm:p-6">{renderContent()}</div>
       </main>
     </div>
   );

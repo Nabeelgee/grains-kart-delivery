@@ -250,19 +250,19 @@ export function ReportsManager() {
   return (
     <div className="space-y-6">
       <Tabs value={period} onValueChange={(v) => setPeriod(v as ReportPeriod)}>
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <TabsList>
             <TabsTrigger value="daily">Daily</TabsTrigger>
             <TabsTrigger value="weekly">Weekly</TabsTrigger>
             <TabsTrigger value="monthly">Monthly</TabsTrigger>
           </TabsList>
           <div className="flex gap-2">
-            <Button variant="outline" onClick={downloadCSV} disabled={orders.length === 0}>
-              <Download className="w-4 h-4 mr-2" />
+            <Button variant="outline" size="sm" onClick={downloadCSV} disabled={orders.length === 0}>
+              <Download className="w-4 h-4 mr-1" />
               CSV
             </Button>
-            <Button variant="outline" onClick={downloadPDF} disabled={orders.length === 0}>
-              <Download className="w-4 h-4 mr-2" />
+            <Button variant="outline" size="sm" onClick={downloadPDF} disabled={orders.length === 0}>
+              <Download className="w-4 h-4 mr-1" />
               PDF
             </Button>
           </div>
@@ -294,7 +294,7 @@ export function ReportsManager() {
                 ))}
               </div>
 
-              {/* Orders Table */}
+              {/* Orders Table/Cards */}
               <Card>
                 <CardHeader>
                   <CardTitle>Orders ({orders.length})</CardTitle>
@@ -305,44 +305,78 @@ export function ReportsManager() {
                       No orders found for this period
                     </p>
                   ) : (
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Order #</TableHead>
-                          <TableHead>Date</TableHead>
-                          <TableHead>Amount</TableHead>
-                          <TableHead>Status</TableHead>
-                          <TableHead>Payment</TableHead>
-                          <TableHead>City</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
+                    <>
+                      {/* Desktop Table */}
+                      <div className="hidden md:block overflow-x-auto">
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>Order #</TableHead>
+                              <TableHead>Date</TableHead>
+                              <TableHead>Amount</TableHead>
+                              <TableHead>Status</TableHead>
+                              <TableHead>Payment</TableHead>
+                              <TableHead>City</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {orders.map((order) => (
+                              <TableRow key={order.id}>
+                                <TableCell className="font-mono">{order.order_number}</TableCell>
+                                <TableCell>
+                                  {format(new Date(order.created_at), "dd/MM/yyyy HH:mm")}
+                                </TableCell>
+                                <TableCell className="font-medium">₹{order.total}</TableCell>
+                                <TableCell>
+                                  <span
+                                    className={`px-2 py-1 rounded text-xs font-medium ${
+                                      order.status === "delivered"
+                                        ? "bg-success/20 text-success"
+                                        : order.status === "cancelled"
+                                        ? "bg-destructive/20 text-destructive"
+                                        : "bg-warning/20 text-warning"
+                                    }`}
+                                  >
+                                    {order.status}
+                                  </span>
+                                </TableCell>
+                                <TableCell className="uppercase">{order.payment_method}</TableCell>
+                                <TableCell>{order.delivery_city}</TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+
+                      {/* Mobile Card View */}
+                      <div className="md:hidden space-y-3">
                         {orders.map((order) => (
-                          <TableRow key={order.id}>
-                            <TableCell className="font-mono">{order.order_number}</TableCell>
-                            <TableCell>
-                              {format(new Date(order.created_at), "dd/MM/yyyy HH:mm")}
-                            </TableCell>
-                            <TableCell className="font-medium">₹{order.total}</TableCell>
-                            <TableCell>
+                          <div key={order.id} className="border border-border rounded-lg p-3">
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="font-mono text-sm font-medium">{order.order_number}</span>
                               <span
                                 className={`px-2 py-1 rounded text-xs font-medium ${
                                   order.status === "delivered"
-                                    ? "bg-green-100 text-green-700"
+                                    ? "bg-success/20 text-success"
                                     : order.status === "cancelled"
-                                    ? "bg-red-100 text-red-700"
-                                    : "bg-yellow-100 text-yellow-700"
+                                    ? "bg-destructive/20 text-destructive"
+                                    : "bg-warning/20 text-warning"
                                 }`}
                               >
                                 {order.status}
                               </span>
-                            </TableCell>
-                            <TableCell className="uppercase">{order.payment_method}</TableCell>
-                            <TableCell>{order.delivery_city}</TableCell>
-                          </TableRow>
+                            </div>
+                            <div className="flex items-center justify-between text-sm">
+                              <span className="font-bold">₹{order.total}</span>
+                              <span className="text-muted-foreground uppercase text-xs">{order.payment_method}</span>
+                              <span className="text-muted-foreground text-xs">
+                                {format(new Date(order.created_at), "dd MMM")}
+                              </span>
+                            </div>
+                          </div>
                         ))}
-                      </TableBody>
-                    </Table>
+                      </div>
+                    </>
                   )}
                 </CardContent>
               </Card>

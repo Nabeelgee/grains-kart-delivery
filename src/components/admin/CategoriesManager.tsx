@@ -327,52 +327,113 @@ export function CategoriesManager() {
               </Button>
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Order</TableHead>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Slug</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+            <>
+              {/* Desktop Table */}
+              <div className="hidden md:block">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Order</TableHead>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Slug</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {categories.map((category) => (
+                      <TableRow key={category.id}>
+                        <TableCell className="font-mono text-sm">
+                          {category.sort_order}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-3">
+                            {category.image_url && (
+                              <img
+                                src={category.image_url}
+                                alt={category.name}
+                                className="w-8 h-8 rounded object-cover"
+                              />
+                            )}
+                            <span className="font-medium">{category.name}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-muted-foreground">
+                          {category.slug}
+                        </TableCell>
+                        <TableCell>
+                          <Switch
+                            checked={category.is_active ?? true}
+                            onCheckedChange={() =>
+                              toggleActive(category.id, category.is_active ?? true)
+                            }
+                          />
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-2">
+                            <Button variant="ghost" size="sm" onClick={() => openEdit(category)}>
+                              <Pencil className="w-4 h-4" />
+                            </Button>
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button variant="ghost" size="sm">
+                                  <Trash2 className="w-4 h-4 text-destructive" />
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Delete Category</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    Are you sure you want to delete "{category.name}"?
+                                    Products assigned to this category won't be deleted
+                                    but will become uncategorized.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogAction
+                                    onClick={() => handleDelete(category.id)}
+                                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                  >
+                                    Delete
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Mobile Card View */}
+              <div className="md:hidden space-y-3 p-4">
                 {categories.map((category) => (
-                  <TableRow key={category.id}>
-                    <TableCell className="font-mono text-sm">
-                      {category.sort_order}
-                    </TableCell>
-                    <TableCell>
+                  <div key={category.id} className="border border-border rounded-lg p-4">
+                    <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         {category.image_url && (
                           <img
                             src={category.image_url}
                             alt={category.name}
-                            className="w-8 h-8 rounded object-cover"
+                            className="w-10 h-10 rounded object-cover"
                           />
                         )}
-                        <span className="font-medium">{category.name}</span>
+                        <div>
+                          <p className="font-medium">{category.name}</p>
+                          <p className="text-xs text-muted-foreground">{category.slug}</p>
+                        </div>
                       </div>
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {category.slug}
-                    </TableCell>
-                    <TableCell>
-                      <Switch
-                        checked={category.is_active ?? true}
-                        onCheckedChange={() =>
-                          toggleActive(category.id, category.is_active ?? true)
-                        }
-                      />
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => openEdit(category)}
-                        >
+                      <div className="flex items-center gap-2">
+                        <Switch
+                          checked={category.is_active ?? true}
+                          onCheckedChange={() =>
+                            toggleActive(category.id, category.is_active ?? true)
+                          }
+                        />
+                        <Button variant="ghost" size="sm" onClick={() => openEdit(category)}>
                           <Pencil className="w-4 h-4" />
                         </Button>
                         <AlertDialog>
@@ -386,8 +447,6 @@ export function CategoriesManager() {
                               <AlertDialogTitle>Delete Category</AlertDialogTitle>
                               <AlertDialogDescription>
                                 Are you sure you want to delete "{category.name}"?
-                                Products assigned to this category won't be deleted
-                                but will become uncategorized.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
@@ -402,11 +461,11 @@ export function CategoriesManager() {
                           </AlertDialogContent>
                         </AlertDialog>
                       </div>
-                    </TableCell>
-                  </TableRow>
+                    </div>
+                  </div>
                 ))}
-              </TableBody>
-            </Table>
+              </div>
+            </>
           )}
         </CardContent>
       </Card>
