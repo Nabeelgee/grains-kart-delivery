@@ -212,6 +212,7 @@ export type Database = {
           notes: string | null
           order_number: string
           payment_method: Database["public"]["Enums"]["payment_method"]
+          payment_screenshot_url: string | null
           payment_status: string | null
           promo_code: string | null
           restaurant_id: string
@@ -235,6 +236,7 @@ export type Database = {
           notes?: string | null
           order_number: string
           payment_method: Database["public"]["Enums"]["payment_method"]
+          payment_screenshot_url?: string | null
           payment_status?: string | null
           promo_code?: string | null
           restaurant_id: string
@@ -258,6 +260,7 @@ export type Database = {
           notes?: string | null
           order_number?: string
           payment_method?: Database["public"]["Enums"]["payment_method"]
+          payment_screenshot_url?: string | null
           payment_status?: string | null
           promo_code?: string | null
           restaurant_id?: string
