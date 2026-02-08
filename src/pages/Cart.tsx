@@ -12,6 +12,7 @@ import {
   CreditCard,
   Banknote,
   Smartphone,
+  X,
 } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
@@ -27,6 +28,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 type PaymentMethod = "cod" | "upi" | "card";
+
+const UPI_NUMBER = "6379658082";
 
 export default function CartPage() {
   const navigate = useNavigate();
@@ -52,6 +55,7 @@ export default function CartPage() {
   const [deliveryPhone, setDeliveryPhone] = useState("");
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showQR, setShowQR] = useState(false);
 
   const handleApplyPromo = async () => {
     // Check promo code in database
@@ -399,31 +403,66 @@ export default function CartPage() {
                     >
                       <Smartphone className="w-5 h-5 text-primary" />
                       <div>
-                        <p className="font-medium">UPI Payment</p>
+                        <p className="font-medium">GPay (UPI)</p>
                         <p className="text-sm text-muted-foreground">
-                          UPI Number: <span className="font-mono font-bold text-primary">6379658082</span>
+                          Pay via Google Pay to <span className="font-mono font-bold text-primary">{UPI_NUMBER}</span>
                         </p>
                       </div>
                     </Label>
-                  </div>
-                  <div className="flex items-center space-x-3 p-4 rounded-lg border border-border hover:border-primary/50 transition-colors">
-                    <RadioGroupItem value="card" id="card" />
-                    <Label
-                      htmlFor="card"
-                      className="flex items-center gap-3 cursor-pointer flex-1"
-                    >
-                      <CreditCard className="w-5 h-5 text-warning" />
-                      <div>
-                        <p className="font-medium">Credit / Debit Card</p>
-                        <p className="text-sm text-muted-foreground">
-                          Visa, Mastercard, RuPay
-                        </p>
-                      </div>
-                    </Label>
+                    {paymentMethod === "upi" && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowQR(true)}
+                        className="ml-auto shrink-0"
+                      >
+                        Show QR
+                      </Button>
+                    )}
                   </div>
                 </RadioGroup>
               </CardContent>
             </Card>
+
+            {/* GPay QR Code Modal */}
+            {showQR && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/60 backdrop-blur-sm" onClick={() => setShowQR(false)}>
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="bg-card rounded-2xl p-6 mx-4 max-w-sm w-full shadow-xl relative"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <button
+                    onClick={() => setShowQR(false)}
+                    className="absolute top-3 right-3 p-1 rounded-full hover:bg-secondary"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                  <h3 className="text-lg font-bold text-center mb-2">Pay via GPay</h3>
+                  <p className="text-sm text-muted-foreground text-center mb-4">
+                    Scan this QR code or pay to the number below
+                  </p>
+                  <div className="flex justify-center mb-4">
+                    <img
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=${UPI_NUMBER}@ybl&pn=GRAINSKART&am=${(total - discount).toFixed(0)}&cu=INR`}
+                      alt="GPay QR Code"
+                      className="w-48 h-48 rounded-lg border border-border"
+                    />
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm text-muted-foreground mb-1">UPI Number</p>
+                    <p className="text-2xl font-mono font-bold text-primary">{UPI_NUMBER}</p>
+                    <p className="text-sm text-muted-foreground mt-3">
+                      Amount: <span className="font-bold text-foreground">₹{(total - discount).toFixed(0)}</span>
+                    </p>
+                  </div>
+                  <Button className="w-full mt-4" onClick={() => setShowQR(false)}>
+                    Done
+                  </Button>
+                </motion.div>
+              </div>
+            )}
           </div>
 
           {/* Order Summary */}
