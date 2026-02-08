@@ -243,11 +243,11 @@ export function ProductsManager() {
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
+      <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <CardTitle>Products Management</CardTitle>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={handleCreate}>
+            <Button onClick={handleCreate} className="w-full sm:w-auto">
               <Plus className="w-4 h-4 mr-2" />
               Add Product
             </Button>
@@ -259,7 +259,7 @@ export function ProductsManager() {
               </DialogTitle>
             </DialogHeader>
             <div className="space-y-4 py-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Name *</Label>
                   <Input
@@ -298,7 +298,7 @@ export function ProductsManager() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Price *</Label>
                   <Input
@@ -322,7 +322,7 @@ export function ProductsManager() {
               {/* Image Upload Section */}
               <div className="space-y-2">
                 <Label>Product Image</Label>
-                <div className="flex items-start gap-4">
+                <div className="flex flex-col sm:flex-row items-start gap-4">
                   {imagePreview ? (
                     <div className="relative">
                       <img
@@ -360,7 +360,7 @@ export function ProductsManager() {
                     onChange={handleImageUpload}
                     className="hidden"
                   />
-                  <div className="flex-1">
+                  <div className="flex-1 w-full">
                     <Input
                       value={formData.image_url}
                       onChange={(e) => {
@@ -415,73 +415,126 @@ export function ProductsManager() {
           </DialogContent>
         </Dialog>
       </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Product</TableHead>
-              <TableHead>Price</TableHead>
-              <TableHead>Bestseller</TableHead>
-              <TableHead>Available</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {products.map((product) => (
-              <TableRow key={product.id}>
-                <TableCell>
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={product.image_url || "/placeholder.svg"}
-                      alt={product.name}
-                      className="w-10 h-10 rounded object-cover"
-                    />
-                    <div>
-                      <p className="font-medium">{product.name}</p>
-                      <p className="text-sm text-muted-foreground line-clamp-1">
-                        {product.description}
-                      </p>
+      <CardContent className="p-0 sm:p-6">
+        {/* Desktop Table */}
+        <div className="hidden md:block overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-border">
+                <th className="text-left p-3 text-sm font-medium text-muted-foreground">Product</th>
+                <th className="text-left p-3 text-sm font-medium text-muted-foreground">Price</th>
+                <th className="text-left p-3 text-sm font-medium text-muted-foreground">Bestseller</th>
+                <th className="text-left p-3 text-sm font-medium text-muted-foreground">Available</th>
+                <th className="text-left p-3 text-sm font-medium text-muted-foreground">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {products.map((product) => (
+                <tr key={product.id} className="border-b border-border hover:bg-secondary/30">
+                  <td className="p-3">
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={product.image_url || "/placeholder.svg"}
+                        alt={product.name}
+                        className="w-10 h-10 rounded object-cover"
+                      />
+                      <div>
+                        <p className="font-medium">{product.name}</p>
+                        <p className="text-sm text-muted-foreground line-clamp-1">
+                          {product.description}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <span>₹{product.discounted_price || product.price}</span>
+                  </td>
+                  <td className="p-3">
+                    <div className="flex items-center gap-2">
+                      <span>₹{product.discounted_price || product.price}</span>
+                      {product.discounted_price && (
+                        <span className="text-sm text-muted-foreground line-through">
+                          ₹{product.price}
+                        </span>
+                      )}
+                    </div>
+                  </td>
+                  <td className="p-3">
+                    {product.is_bestseller && <Badge>⭐ Bestseller</Badge>}
+                  </td>
+                  <td className="p-3">
+                    <Switch
+                      checked={product.is_available ?? true}
+                      onCheckedChange={(c) => toggleAvailability(product.id, c)}
+                    />
+                  </td>
+                  <td className="p-3">
+                    <div className="flex gap-2">
+                      <Button size="sm" variant="ghost" onClick={() => handleEdit(product)}>
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="text-destructive"
+                        onClick={() => handleDelete(product.id)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Mobile Card View */}
+        <div className="md:hidden space-y-3 p-4">
+          {products.map((product) => (
+            <div key={product.id} className="border border-border rounded-lg p-4">
+              <div className="flex items-start gap-3">
+                <img
+                  src={product.image_url || "/placeholder.svg"}
+                  alt={product.name}
+                  className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
+                />
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium truncate">{product.name}</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="font-bold">₹{product.discounted_price || product.price}</span>
                     {product.discounted_price && (
-                      <span className="text-sm text-muted-foreground line-through">
-                        ₹{product.price}
-                      </span>
+                      <span className="text-sm text-muted-foreground line-through">₹{product.price}</span>
                     )}
                   </div>
-                </TableCell>
-                <TableCell>
-                  {product.is_bestseller && <Badge>⭐ Bestseller</Badge>}
-                </TableCell>
-                <TableCell>
-                  <Switch
-                    checked={product.is_available ?? true}
-                    onCheckedChange={(c) => toggleAvailability(product.id, c)}
-                  />
-                </TableCell>
-                <TableCell>
-                  <div className="flex gap-2">
-                    <Button size="sm" variant="ghost" onClick={() => handleEdit(product)}>
-                      <Edit className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="text-destructive"
-                      onClick={() => handleDelete(product.id)}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
+                  <div className="flex items-center gap-3 mt-2">
+                    {product.is_bestseller && <Badge className="text-xs">⭐ Best</Badge>}
+                    <div className="flex items-center gap-1">
+                      <Switch
+                        checked={product.is_available ?? true}
+                        onCheckedChange={(c) => toggleAvailability(product.id, c)}
+                      />
+                      <span className="text-xs text-muted-foreground">
+                        {product.is_available ? "On" : "Off"}
+                      </span>
+                    </div>
                   </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <Button size="sm" variant="ghost" onClick={() => handleEdit(product)}>
+                    <Edit className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="text-destructive"
+                    onClick={() => handleDelete(product.id)}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
         {products.length === 0 && (
           <p className="text-center text-muted-foreground py-8">
             No products yet. Click "Add Product" to create one.

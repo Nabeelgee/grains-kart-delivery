@@ -203,7 +203,7 @@ export function UsersManager() {
         />
       </div>
 
-      {/* Users Table */}
+      {/* Users Table/Cards */}
       <Card>
         <CardContent className="p-0">
           {filteredUsers.length === 0 ? (
@@ -211,52 +211,140 @@ export function UsersManager() {
               <p className="text-muted-foreground">No users found</p>
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>User</TableHead>
-                  <TableHead>Contact</TableHead>
-                  <TableHead>City</TableHead>
-                  <TableHead>Role</TableHead>
-                  <TableHead>Joined</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+            <>
+              {/* Desktop Table */}
+              <div className="hidden md:block overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>User</TableHead>
+                      <TableHead>Contact</TableHead>
+                      <TableHead>City</TableHead>
+                      <TableHead>Role</TableHead>
+                      <TableHead>Joined</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredUsers.map((user) => (
+                      <TableRow key={user.id}>
+                        <TableCell>
+                          <div>
+                            <p className="font-medium">{user.full_name || "No Name"}</p>
+                            <p className="text-sm text-muted-foreground flex items-center gap-1">
+                              <Mail className="w-3 h-3" />
+                              {user.email || "—"}
+                            </p>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          {user.phone ? (
+                            <span className="flex items-center gap-1 text-sm">
+                              <Phone className="w-3 h-3" />
+                              {user.phone}
+                            </span>
+                          ) : (
+                            <span className="text-muted-foreground">—</span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {user.city ? (
+                            <span className="flex items-center gap-1 text-sm">
+                              <MapPin className="w-3 h-3" />
+                              {user.city}
+                            </span>
+                          ) : (
+                            <span className="text-muted-foreground">—</span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant={
+                              user.role === "admin"
+                                ? "destructive"
+                                : user.role === "vendor"
+                                ? "default"
+                                : "secondary"
+                            }
+                          >
+                            {user.role}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-sm text-muted-foreground">
+                          {format(new Date(user.created_at), "dd MMM yyyy")}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {user.role === "user" ? (
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button variant="outline" size="sm">
+                                  <ShieldCheck className="w-4 h-4 mr-1" />
+                                  Make Admin
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Promote to Admin</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    Are you sure you want to make{" "}
+                                    <strong>{user.full_name || user.email}</strong> an admin?
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogAction
+                                    onClick={() => handlePromoteToAdmin(user.user_id, user.full_name || "User")}
+                                  >
+                                    Promote
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          ) : user.role === "admin" ? (
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button variant="ghost" size="sm" className="text-muted-foreground">
+                                  <Shield className="w-4 h-4 mr-1" />
+                                  Demote
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Remove Admin Access</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    Remove admin access from <strong>{user.full_name || user.email}</strong>?
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogAction
+                                    onClick={() => handleDemoteToUser(user.user_id, user.full_name || "User")}
+                                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                  >
+                                    Remove Admin
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          ) : (
+                            <Badge variant="outline">Vendor</Badge>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Mobile Card View */}
+              <div className="md:hidden space-y-3 p-4">
                 {filteredUsers.map((user) => (
-                  <TableRow key={user.id}>
-                    <TableCell>
+                  <div key={user.id} className="border border-border rounded-lg p-4 space-y-3">
+                    <div className="flex items-start justify-between">
                       <div>
-                        <p className="font-medium">
-                          {user.full_name || "No Name"}
-                        </p>
-                        <p className="text-sm text-muted-foreground flex items-center gap-1">
-                          <Mail className="w-3 h-3" />
-                          {user.email || "—"}
-                        </p>
+                        <p className="font-medium">{user.full_name || "No Name"}</p>
+                        <p className="text-sm text-muted-foreground">{user.email || "—"}</p>
                       </div>
-                    </TableCell>
-                    <TableCell>
-                      {user.phone ? (
-                        <span className="flex items-center gap-1 text-sm">
-                          <Phone className="w-3 h-3" />
-                          {user.phone}
-                        </span>
-                      ) : (
-                        <span className="text-muted-foreground">—</span>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {user.city ? (
-                        <span className="flex items-center gap-1 text-sm">
-                          <MapPin className="w-3 h-3" />
-                          {user.city}
-                        </span>
-                      ) : (
-                        <span className="text-muted-foreground">—</span>
-                      )}
-                    </TableCell>
-                    <TableCell>
                       <Badge
                         variant={
                           user.role === "admin"
@@ -268,11 +356,25 @@ export function UsersManager() {
                       >
                         {user.role}
                       </Badge>
-                    </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
-                      {format(new Date(user.created_at), "dd MMM yyyy")}
-                    </TableCell>
-                    <TableCell className="text-right">
+                    </div>
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                      {user.phone && (
+                        <span className="flex items-center gap-1">
+                          <Phone className="w-3 h-3" />
+                          {user.phone}
+                        </span>
+                      )}
+                      {user.city && (
+                        <span className="flex items-center gap-1">
+                          <MapPin className="w-3 h-3" />
+                          {user.city}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-muted-foreground">
+                        Joined {format(new Date(user.created_at), "dd MMM yyyy")}
+                      </span>
                       {user.role === "user" ? (
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
@@ -285,20 +387,13 @@ export function UsersManager() {
                             <AlertDialogHeader>
                               <AlertDialogTitle>Promote to Admin</AlertDialogTitle>
                               <AlertDialogDescription>
-                                Are you sure you want to make{" "}
-                                <strong>{user.full_name || user.email}</strong> an
-                                admin? They will have full access to the admin panel.
+                                Make <strong>{user.full_name || user.email}</strong> an admin?
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                               <AlertDialogCancel>Cancel</AlertDialogCancel>
                               <AlertDialogAction
-                                onClick={() =>
-                                  handlePromoteToAdmin(
-                                    user.user_id,
-                                    user.full_name || "User"
-                                  )
-                                }
+                                onClick={() => handlePromoteToAdmin(user.user_id, user.full_name || "User")}
                               >
                                 Promote
                               </AlertDialogAction>
@@ -315,25 +410,18 @@ export function UsersManager() {
                           </AlertDialogTrigger>
                           <AlertDialogContent>
                             <AlertDialogHeader>
-                              <AlertDialogTitle>Remove Admin Access</AlertDialogTitle>
+                              <AlertDialogTitle>Remove Admin</AlertDialogTitle>
                               <AlertDialogDescription>
-                                Are you sure you want to remove admin access from{" "}
-                                <strong>{user.full_name || user.email}</strong>?
-                                They will become a regular customer.
+                                Remove admin access from <strong>{user.full_name || user.email}</strong>?
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                               <AlertDialogCancel>Cancel</AlertDialogCancel>
                               <AlertDialogAction
-                                onClick={() =>
-                                  handleDemoteToUser(
-                                    user.user_id,
-                                    user.full_name || "User"
-                                  )
-                                }
+                                onClick={() => handleDemoteToUser(user.user_id, user.full_name || "User")}
                                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                               >
-                                Remove Admin
+                                Remove
                               </AlertDialogAction>
                             </AlertDialogFooter>
                           </AlertDialogContent>
@@ -341,11 +429,11 @@ export function UsersManager() {
                       ) : (
                         <Badge variant="outline">Vendor</Badge>
                       )}
-                    </TableCell>
-                  </TableRow>
+                    </div>
+                  </div>
                 ))}
-              </TableBody>
-            </Table>
+              </div>
+            </>
           )}
         </CardContent>
       </Card>
