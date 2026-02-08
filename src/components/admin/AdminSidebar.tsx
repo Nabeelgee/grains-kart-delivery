@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   Package,
@@ -8,6 +9,7 @@ import {
   LogOut,
   FolderOpen,
   Users,
+  Store,
 } from "lucide-react";
 
 interface AdminSidebarProps {
@@ -77,15 +79,22 @@ const navItems = [
            ))}
          </nav>
  
-         <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-border">
-           <button
-             onClick={onSignOut}
-             className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-destructive hover:bg-destructive/10 transition-colors"
-           >
-             <LogOut className="w-5 h-5" />
-             Sign Out
-           </button>
-         </div>
+        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-border space-y-1">
+            <button
+              onClick={() => window.location.href = "/"}
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-secondary transition-colors text-primary"
+            >
+              <Store className="w-5 h-5" />
+              Go to Shop
+            </button>
+            <button
+              onClick={onSignOut}
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-destructive hover:bg-destructive/10 transition-colors"
+            >
+              <LogOut className="w-5 h-5" />
+              Sign Out
+            </button>
+          </div>
        </aside>
      </>
    );
